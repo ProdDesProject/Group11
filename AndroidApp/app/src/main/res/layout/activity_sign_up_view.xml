@@ -4,19 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginView">
-
+    tools:context=".SignUpView">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="45dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/logo"
-         />
+        />
 
 
     <TextView
@@ -30,17 +29,32 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp" />
 
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="55dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:hint="Email"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+         />
+
     <EditText
         android:id="@+id/usernameEditText"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="55dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
         android:hint="Username"
         android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/emailEditText"
+         />
 
     <EditText
         android:id="@+id/passwordEditText"
@@ -53,7 +67,10 @@
         android:password="true"
         android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameEditText"
+         />
+
+
 
     <Button
         android:id="@+id/button"
@@ -61,22 +78,10 @@
         android:layout_height="50dp"
         android:layout_marginLeft="55dp"
         android:layout_marginTop="10dp"
-        android:text="LOGIN"
+        android:text="Create Account"
         app:backgroundTint="#0E4F59"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
+        android:onClick="createAccountButtonClicked"/>
 
-        android:onClick="loginButtonClicked"/>
-
-    <TextView
-        android:id="@+id/newAccountTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:text="Don't have account? create a new account"
-        android:gravity="center"
-        android:textSize="15dp"
-        app:layout_constraintTop_toBottomOf="@+id/button"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
