@@ -37,10 +37,13 @@ public class LoginView extends AppCompatActivity {
             Toast.makeText(this, "Enter your username and password", Toast. LENGTH_SHORT). show();
         } else {
             //login functionality
+            Intent mainmenuIntent = new Intent(this, MainMenuView.class);
+            startActivity(mainmenuIntent);
         }
     }
 
     public void signUpInstanceButton(){
+        //Create new account -textView with functionality
         TextView textViewNewAccount = findViewById(R.id.newAccountTextView);
         String textViewText = "Don't have account? create a new account";
 
@@ -62,5 +65,9 @@ public class LoginView extends AppCompatActivity {
     public void goToSignUpView(){
         Intent signUpIntent = new Intent(this, SignUpView.class);
         startActivity(signUpIntent);
+    }
+
+    public void onBackPressed() {
+        this.moveTaskToBack(true);
     }
 }
