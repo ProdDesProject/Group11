@@ -1,0 +1,253 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/t8hami022/workhoursAPI/1.0.0"
+  } ],
+  "info" : {
+    "description" : "This is a simple API",
+    "version" : "1.0.0",
+    "title" : "Simple Inventory API",
+    "contact" : {
+      "email" : "you@your-company.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "admins",
+    "description" : "Secured Admin-only calls"
+  }, {
+    "name" : "developers",
+    "description" : "Operations available to regular developers"
+  } ],
+  "paths" : {
+    "/createUsers" : {
+      "post" : {
+        "tags" : [ "developers" ],
+        "summary" : "adds a registered user",
+        "operationId" : "addUser",
+        "description" : "Adds a registered user to database",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          },
+          "409" : {
+            "description" : "an existing item already exists"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserItem"
+              }
+            }
+          },
+          "description" : "User item to add"
+        }
+      }
+    },
+    "/login" : {
+      "post" : {
+        "tags" : [ "developers" ],
+        "summary" : "login",
+        "operationId" : "login",
+        "description" : "login user and ...",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "userID" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "username" : {
+                    "type" : "string",
+                    "example" : "someusername"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "example" : "somepassword"
+                  }
+                }
+              }
+            }
+          },
+          "description" : "username and password in requestbody"
+        }
+      }
+    },
+    "/workhours/{userID}" : {
+      "parameters" : [ {
+        "schema" : {
+          "type" : "string"
+        },
+        "name" : "userID",
+        "in" : "path",
+        "required" : true
+      } ],
+      "get" : {
+        "tags" : [ "developers" ],
+        "summary" : "get users workhours",
+        "operationId" : "getWorkhours",
+        "description" : "get users workhours from database",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/WorkhourItem"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad request"
+          }
+        }
+      }
+    },
+    "/workhours" : {
+      "post" : {
+        "tags" : [ "developers" ],
+        "summary" : "make a new workhour",
+        "operationId" : "postWorkhours",
+        "description" : "make a new workhour",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "bad request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WorkhourItem"
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "developers" ],
+        "summary" : "edit a workhour",
+        "operationId" : "putWorkhours",
+        "description" : "edit a workhour",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "bad request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WorkhourItem"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workhours/{workhoursID}" : {
+      "parameters" : [ {
+        "schema" : {
+          "type" : "string"
+        },
+        "name" : "workhoursID",
+        "in" : "path",
+        "required" : true
+      } ],
+      "delete" : {
+        "tags" : [ "developers" ],
+        "summary" : "delete a workhour",
+        "operationId" : "deleteWorkhours",
+        "description" : "delete a workhour",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "bad request"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "UserItem" : {
+        "type" : "object",
+        "required" : [ "username", "password", "email" ],
+        "properties" : {
+          "username" : {
+            "type" : "string",
+            "example" : "someusername"
+          },
+          "password" : {
+            "type" : "string",
+            "example" : "somepassword"
+          },
+          "email" : {
+            "type" : "string",
+            "example" : "someemail"
+          }
+        }
+      },
+      "WorkhourItem" : {
+        "type" : "object",
+        "required" : [ "description", "startTime", "endTime" ],
+        "properties" : {
+          "description" : {
+            "type" : "string",
+            "example" : "this a description for a workhour"
+          },
+          "startTime" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2021-01-30T08:30:00Z"
+          },
+          "endTime" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2021-01-30T09:30:00Z"
+          }
+        }
+      }
+    }
+  }
+}
