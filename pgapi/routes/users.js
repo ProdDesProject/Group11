@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var user = require('../models/workhours_model');
+var user = require('../models/user_model');
 //const { v4: uuidv4 } = require('uuid');
 //const app = express();
 const bcrypt = require('bcrypt');
@@ -21,14 +21,14 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/', function(req, res, next) {
-  const hashedPassword = bcrypt.hash(req.body.password, 10)
-  /*  
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10)
+   
   const newUser = {
       //id: uuidv4(),
 
       email: req.body.email,
       username: req.body.username,
-      password: req.body.password
+      password: hashedPassword 
     }
 
   if('email' in req.body == false ) {
@@ -46,13 +46,13 @@ router.post('/', function(req, res, next) {
     res.json({status: "Give a username"})
     return;
   }
-  */
+
   //users.push(newUser);
-  user.postNewUser(req.body, function(err, count){
-    if(err){
+  user.postNewUser(newUser, function(err, count) {
+    if(err) {
       res.json(err);
-    }else{
-      res.json(req.body);
+    } else {
+      res.json(newUser);
     }
   });
 
