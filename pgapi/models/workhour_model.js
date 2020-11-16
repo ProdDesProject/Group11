@@ -10,6 +10,16 @@ var workhour = {
         [newWorkhour.userid, newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description],
         callback
         );
+    },
+    editWorkhour: function(newWorkhour, callback) {
+        return db.query(
+            'update schema1.workhours set userid=$1, startTime=$2, endTime=$3, description=$4 where hoursid=$5',
+            [newWorkhour.userid, newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description, newWorkhour.hoursid],
+            callback
+        );
+    },
+    deleteWorkhour: function(hoursid, callback) {
+        return db.query('delete from schema1.workhours where hoursid=$1', [hoursid], callback);
     }
 };
 

@@ -35,4 +35,32 @@ router.post('/', function(req,res,next) {
     });
 });
 
+router.put('/:id', function(req, res, next) {
+    const newWorkhour = {
+        userid: req.body.userid,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        description: req.body.description,
+        hoursid: req.params.id
+      }
+
+    workhours.editWorkhour(newWorkhour, function(err, rows) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(newWorkhour);
+        }
+    });
+});
+
+router.delete('/:id', function(req, res, next) {
+    workhours.deleteWorkhour(req.params.id, function(err, count) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(count);
+        }
+    });
+});
+
 module.exports = router;
