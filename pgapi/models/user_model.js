@@ -11,6 +11,15 @@ var user = {
         callback
         );
     },
+    saveRefrestToken: function(newRefrestToken, username, callback){
+        return db.query('update schema1.users set refrestToken=$1 where username=$2',[newRefrestToken,username],
+        callback
+        );
+    },
+    getRefrestToken: function(username, callback){
+        return db.query('select refrestToken from schema1.users where username=\'$1\'',[username],callback
+        );
+    }
 };
 
 

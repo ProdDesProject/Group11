@@ -1,7 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 var db = require('../database');
+const user = require('../models/user_model');
+
 
 router.post('/', function(request,response) {
     if(request.body.username && request.body.password) {
@@ -14,7 +17,24 @@ router.post('/', function(request,response) {
                     console.log(res);
                     if (res) {
                         console.log("succes");
-                        response.send(true);
+
+                        var payload = {username: request.body.username}
+
+                        var accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+                            algorithm: "HS256",
+                            expiresIn: process.env.ACCESS_TOKEN_LIFE
+                        })
+
+                        var refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+                            algorithm: "HS256",
+                            expiresIn: process.env.REFRESH_TOKEN_LIFE
+                        })
+
+                        
+                        user.saveRefrestToken(refreshToken, username);
+
+                        response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
+
                     } else {
                         console.log("Wrong password");
                         response.send(false);
