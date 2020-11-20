@@ -31,7 +31,7 @@ router.post('/', function(request,response) {
                         })
 
                         
-                        user.saveRefrestToken(refreshToken, username);
+                        //user.saveRefrestToken(refreshToken, username);
 
                         response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
 

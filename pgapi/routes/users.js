@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var user = require('../models/user_model');
-//const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 //const app = express();
 const bcrypt = require('bcrypt');
 
@@ -24,7 +24,7 @@ router.post('/', function(req, res, next) {
   const hashedPassword = bcrypt.hashSync(req.body.password, 10)
    
   const newUser = {
-      //id: uuidv4(),
+      id: uuidv4(),
 
       email: req.body.email,
       username: req.body.username,

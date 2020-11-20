@@ -6,8 +6,8 @@ var user = {
     },
     postNewUser: function(newUser, callback){
         console.log(newUser);
-        return db.query('insert into schema1.users(email, username, userpassword) values($1,$2,$3)',        
-        [newUser.email, newUser.username, newUser.password],
+        return db.query('insert into schema1.users(userid, email, username, userpassword) values($1,$2,$3, $4)',        
+        [newUser.id ,newUser.email, newUser.username, newUser.password],
         callback
         );
     },
