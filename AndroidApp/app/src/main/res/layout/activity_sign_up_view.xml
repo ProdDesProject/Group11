@@ -6,80 +6,80 @@
     android:layout_height="match_parent"
     tools:context=".SignUpView">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="45dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/logo" />
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tools:ignore="MissingConstraints">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="50dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo" />
 
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="SRC-Wall"
-        android:textSize="30dp"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="0dp" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="SRC-Wall"
+            android:textSize="30dp"
+            android:layout_marginTop="150dp"
+
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp" />
 
 
-    <EditText
-        android:id="@+id/emailEditText"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="55dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:hint="Email"
-        android:singleLine="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-         />
+        <EditText
+            android:id="@+id/emailEditText"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="205dp"
+            android:gravity="center_horizontal"
+            android:hint="Email"
+            android:singleLine="true"
+             />
 
-    <EditText
-        android:id="@+id/usernameEditText"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="55dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:hint="Username"
-        android:singleLine="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailEditText"
-         />
+        <EditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="265dp"
+            android:gravity="center_horizontal"
+            android:hint="Username"
+            android:singleLine="true"
+             />
 
-    <EditText
-        android:id="@+id/passwordEditText"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="55dp"
-        android:layout_marginTop="15dp"
-        android:gravity="center_horizontal"
-        android:hint="Password"
-        android:password="true"
-        android:singleLine="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
+        <EditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="325dp"
+            android:gravity="center_horizontal"
+            android:hint="Password"
+            android:password="true"
+            android:singleLine="true"
+             />
 
 
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="55dp"
-        android:layout_marginTop="10dp"
-        android:text="Create Account"
-        app:backgroundTint="#0E4F59"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
-        android:onClick="createAccountButtonClicked"/>
+        <Button
+            android:id="@+id/button"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="380dp"
+            android:text="Create Account"
+            app:backgroundTint="#0E4F59"
+            android:onClick="createAccountButtonClicked"/>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
