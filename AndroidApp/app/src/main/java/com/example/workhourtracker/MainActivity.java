@@ -15,5 +15,8 @@ public class MainActivity extends AppCompatActivity {
         //open LoginView
         Intent loginIntent = new Intent(this, LoginView.class);
         startActivity(loginIntent);
+
+        //if user is already logged in,
+        //go directly to the main menu view
     }
 }
