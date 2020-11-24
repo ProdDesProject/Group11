@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var workhoursRouter = require('./routes/workhours');
+var refreshRouter = require('./routes/refresh_token');
 
 const {verify} = require('./middleware')
 
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
+app.use('/refresh_token', refreshRouter);
 app.use('/workhours', verify, workhoursRouter);
 
 // catch 404 and forward to error handler
