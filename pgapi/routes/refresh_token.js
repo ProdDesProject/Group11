@@ -16,8 +16,13 @@ exports.refresh = function (req, res){
         return res.status(401).send()
     }
 
-    //retrieve the refresh token from the database
-    user.getRefrestToken(payload.username);
+
+    user.getUserId(username).then((dbQueryResult)=>{
+        userId = dbQueryResult.rows[0].userid;
+        //retrieve the refresh token from the database
+        user.getRefrestToken(userId);
+     }) 
+    
 
     //verify the refresh token
     try{

@@ -48,11 +48,17 @@ router.post('/', function(req, res, next) {
   }
 
   //users.push(newUser);
-  user.postNewUser(newUser, function(err, count) {
+  user.postNewUser(newUser, function(err, result) {
     if(err) {
       res.json(err);
     } else {
-      res.json(newUser);
+      if (result != false){
+        res.json(newUser);
+      }
+      else{
+        res.status(409).send();
+      }
+      
     }
   });
 

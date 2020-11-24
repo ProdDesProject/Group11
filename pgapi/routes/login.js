@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 var db = require('../database');
 const user = require('../models/user_model');
+const { v4: uuidv4 } = require('uuid');
 
 
 router.post('/', function(request,response) {
@@ -17,6 +18,7 @@ router.post('/', function(request,response) {
                     console.log(res);
                     if (res) {
                         console.log("succes");
+                        var test
 
                         var payload = {username: request.body.username}
 
@@ -30,10 +32,15 @@ router.post('/', function(request,response) {
                             expiresIn: process.env.REFRESH_TOKEN_LIFE
                         })
 
+                        //save refreshtoken to database
+                        user.getUserId(username).then((dbQueryResult)=>{
+                           userId = dbQueryResult.rows[0].userid;
+                           user.saveRefrestToken(refreshToken,'2020-11-23 15:00:00-07', userId);
+                        }) 
                         
-                        //user.saveRefrestToken(refreshToken, username);
-
-                        response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
+                        //response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
+                        response.cookie("refreshToken", refreshToken, { httpOnly: true});
+                        response.json(accessToken);
 
                     } else {
                         console.log("Wrong password");
