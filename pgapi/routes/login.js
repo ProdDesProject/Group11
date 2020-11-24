@@ -31,7 +31,8 @@ router.post('/', function(request,response) {
                             algorithm: "HS256",
                             expiresIn: process.env.REFRESH_TOKEN_LIFE
                         })
-
+                        
+                        /*
                         //save refreshtoken to database
                         user.getUserId(username).then((dbQueryResult)=>{
                            userId = dbQueryResult.rows[0].userid;
@@ -39,7 +40,7 @@ router.post('/', function(request,response) {
                         }) 
                         
                         //response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
-                        response.cookie("refreshToken", refreshToken, { httpOnly: true});
+                        response.cookie("refreshToken", refreshToken, { httpOnly: true});*/
                         response.json(accessToken);
 
                     } else {
