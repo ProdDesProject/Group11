@@ -18,7 +18,6 @@ router.post('/', function(request,response) {
                     console.log(res);
                     if (res) {
                         console.log("succes");
-                        var test
 
                         var payload = {username: request.body.username}
 
@@ -37,10 +36,10 @@ router.post('/', function(request,response) {
                         user.getUserId(username).then((dbQueryResult)=>{
                            userId = dbQueryResult.rows[0].userid;
                            user.saveRefrestToken(refreshToken,'2020-11-23 15:00:00-07', userId);
-                        }) 
+                        }) */
                         
                         //response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
-                        response.cookie("refreshToken", refreshToken, { httpOnly: true});*/
+                        response.cookie("refreshToken", refreshToken, { httpOnly: true});
                         response.json(accessToken);
 
                     } else {

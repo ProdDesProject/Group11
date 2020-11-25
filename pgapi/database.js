@@ -7,4 +7,5 @@ const connection = new Pool({
   password: '6a546cf67abc9807e232b7d93c9db48027c6a8446c7bcd04aafe10e3b9b95f72',
   port: 5432
 })
+
 module.exports = connection;
