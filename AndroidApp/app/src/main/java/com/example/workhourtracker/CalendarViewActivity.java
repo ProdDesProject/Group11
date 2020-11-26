@@ -2,6 +2,7 @@ package com.example.workhourtracker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.CalendarView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ public class CalendarViewActivity extends AppCompatActivity {
     String yearString;
 
     String selectedDate;
+    String id = "a12s";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +60,10 @@ public class CalendarViewActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView1);
         textView.setText(selectedDate);
 
-        //move to the next view with selected date
-        //example code from another project
-        //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        //Intent dayActivityIntent = new Intent(this, DayActivity.class);
-        //dayActivityIntent.putExtra("choosedDay", selectedDate);
-        //startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
+        Intent dayActivityIntent = new Intent(this, DayActivity.class);
+        dayActivityIntent.putExtra("Date", selectedDate);
+        dayActivityIntent.putExtra("userId", id);
+        startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
 
     }
 }
