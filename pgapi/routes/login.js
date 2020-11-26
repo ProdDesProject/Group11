@@ -11,6 +11,12 @@ router.post('/', function(request,response) {
     if(request.body.username && request.body.password) {
         var username = request.body.username;
         var password = request.body.password;
+        var userId
+        user.getUserId(username, function(err, result){
+            userId = result.rows[0].userid;
+            console.log(userId)
+
+        })
         db.query('SELECT * FROM schema1.users WHERE username = $1',[username],
         function(error, dbResults, fields) {
             if (dbResults.rows.length > 0) {
@@ -31,27 +37,31 @@ router.post('/', function(request,response) {
                             expiresIn: process.env.REFRESH_TOKEN_LIFE
                         })
                         
-                        /*
+                        /* not used in current versio
                         //save refreshtoken to database
                         user.getUserId(username).then((dbQueryResult)=>{
-                           userId = dbQueryResult.rows[0].userid;
-                           user.saveRefrestToken(refreshToken,'2020-11-23 15:00:00-07', userId);
-                        }) */
-                        
-                        //response.cookie("jwt", accessToken, { httpOnly: true}).send(true);
+                            userId = dbQueryResult.rows[0].userid;
+                            //console.log(userId);
+
+                           //user.saveRefrestToken(refreshToken,'2020-11-23 15:00:00-07', userId);
+                        })*/
+
+
+                        var jsonAccessToken = {userID: userId, token: accessToken}
+
                         response.cookie("refreshToken", refreshToken, { httpOnly: true});
-                        response.json(accessToken);
+                        response.json(jsonAccessToken);
 
                     } else {
                         console.log("Wrong password");
-                        response.send(false);
+                        response.status(401).send('Unauthorized: Wrong password');
                     }
                     response.end();
                 });
             }
             else {
                 console.log("User does not exist.");
-                response.send(false);
+                response.status(404).send('User not found');
             }
         });
     }

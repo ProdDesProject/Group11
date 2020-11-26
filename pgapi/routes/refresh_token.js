@@ -67,8 +67,11 @@ router.post('/', function(req, res, next) {
     })
 
     //send jwt_token in response body and refreshtoken in cookie
+
+    var jsonNewAccessToken = {token: newAccessToken}
+
     res.cookie("refreshToken", newRefreshToken, {httpOnly: true})
-    res.json(newAccessToken);
+    res.json(jsonNewAccessToken);
 
 
 });

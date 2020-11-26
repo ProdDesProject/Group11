@@ -11,7 +11,7 @@ exports.verify = function(req, res, next){
 
     //if there is no token stored in cookies, the request is unauthorized
     if (!accessToken2){
-        return res.status(403).send()
+        return res.status(403).send('Access token is missing')
     }
 
     let payload
@@ -24,6 +24,6 @@ exports.verify = function(req, res, next){
     catch(e){
         //if an error occured return request unauthorized error
         console.log(e)
-        return res.status(401).send()
+        return res.status(401).send('Access token is invalid')
     }
 }
