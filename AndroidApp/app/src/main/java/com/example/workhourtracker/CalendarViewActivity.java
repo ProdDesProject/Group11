@@ -18,6 +18,7 @@ public class CalendarViewActivity extends AppCompatActivity {
     String yearString;
 
     String selectedDate;
+    String id = "a12s";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +60,17 @@ public class CalendarViewActivity extends AppCompatActivity {
         //TextView textView = findViewById(R.id.textView1);
         //textView.setText(selectedDate);
 
+
         //move to the next view with selected date
         //example code from another project
         //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        //Intent dayActivityIntent = new Intent(this, DayActivity.class);
+        //dayActivityIntent.putExtra("choosedDay", selectedDate);
+
         Intent dayActivityIntent = new Intent(this, DayActivity.class);
-        dayActivityIntent.putExtra("choosedDay", selectedDate);
+        dayActivityIntent.putExtra("Date", selectedDate);
+        dayActivityIntent.putExtra("userId", id);
+
         startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
 
     }

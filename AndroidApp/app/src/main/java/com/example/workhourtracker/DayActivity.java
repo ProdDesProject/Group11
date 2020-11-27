@@ -14,9 +14,16 @@ public class DayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day);
 
-        selectedDate = "DD.MM.YYYY";
-        Intent myIntent = getIntent();
-        selectedDate = myIntent.getExtras().getString("choosedDay");
+
+        //selectedDate = "DD.MM.YYYY";
+        //Intent myIntent = getIntent();
+        //selectedDate = myIntent.getExtras().getString("choosedDay");
+
+
+        Intent intent = getIntent();
+
+        String date = intent.getStringExtra("Date");
+        String id = intent.getStringExtra("userId");
 
     }
 }
