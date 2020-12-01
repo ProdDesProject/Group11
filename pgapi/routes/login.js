@@ -12,10 +12,17 @@ router.post('/', function(request,response) {
         var username = request.body.username;
         var password = request.body.password;
         var userId
-        user.getUserId(username, function(err, result){
-            userId = result.rows[0].userid;
-            console.log(userId)
 
+        user.getUserId(username, function(err, result){
+            if (err) {
+                res.json(err);
+            } else {
+                try {
+                    userId = result.rows[0].userid;
+                } catch (error) {
+                    
+                }               
+            }          
         })
         db.query('SELECT * FROM schema1.users WHERE username = $1',[username],
         function(error, dbResults, fields) {
