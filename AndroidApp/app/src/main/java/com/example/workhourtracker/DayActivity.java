@@ -11,17 +11,20 @@ import android.widget.TextView;
 
 public class DayActivity extends AppCompatActivity {
 
+
     private TextView day;
-    private ListView activitiesList;
-    private final int count = 12;
-    String[] activity_list = {"8:00 - 16:00", "8:01 - 20:02", "9:20 - 16:05"};
+    String[] activity_list;
     ListView listView;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day);
+
+
+
 
         Intent intent = getIntent();
 
@@ -35,7 +38,6 @@ public class DayActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.list_item);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.added_hours,R.id.hours,activity_list);
         listView.setAdapter(adapter);
-
 
 
 
