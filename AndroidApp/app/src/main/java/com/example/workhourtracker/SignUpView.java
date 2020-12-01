@@ -43,7 +43,7 @@ public class SignUpView extends AppCompatActivity {
         EditText editTextUsername = findViewById(R.id.usernameEditText);
         EditText editTextPassword = findViewById(R.id.passwordEditText);
         EditText editTextEmail = findViewById(R.id.emailEditText);
-        
+
         usernameInput = editTextUsername.getText().toString();
         passwordInput = editTextPassword.getText().toString();
         emailInput = editTextEmail.getText().toString();
@@ -67,8 +67,8 @@ public class SignUpView extends AppCompatActivity {
                 final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
                         response -> {
                             Toast.makeText(this, "User created", Toast. LENGTH_SHORT). show();
-                            onBackPressed();
                             Log.d("RESPONSE", response);
+                            onBackPressed();
                         }, error -> Log.e("ERROR", error.toString())) {
                     public String getBodyContentType() {
                         return "application/json; charset=utf-8";
