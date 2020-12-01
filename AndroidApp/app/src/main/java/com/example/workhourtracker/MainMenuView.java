@@ -10,10 +10,18 @@ import android.view.View;
 
 public class MainMenuView extends AppCompatActivity {
 
+    private String token;
+    private String userID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu_view);
+
+        Intent intent = getIntent();
+
+        token = intent.getStringExtra("token");
+        userID = intent.getStringExtra("userID");
     }
 
 
@@ -71,6 +79,8 @@ public class MainMenuView extends AppCompatActivity {
 
     public void logoutFunctionality(){
         //Logout functionality
+        token = "";
+        userID = "";
         //close activity and go back to MainActivity/loginActivity after logout
         Intent i=new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
