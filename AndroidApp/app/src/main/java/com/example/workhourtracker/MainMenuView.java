@@ -12,6 +12,7 @@ public class MainMenuView extends AppCompatActivity {
 
     private String token;
     private String userID;
+    int ADD_NEW_PART_INTENT_ID = 2345;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +37,17 @@ public class MainMenuView extends AppCompatActivity {
     public void browseButtonClicked(View view) {
         //go to the calendar view
         Intent browseCalendarIntent = new Intent(this, CalendarViewActivity.class);
-        startActivity(browseCalendarIntent);
+        browseCalendarIntent.putExtra("token", token);
+        browseCalendarIntent.putExtra("userID", userID);
+        startActivityForResult(browseCalendarIntent, ADD_NEW_PART_INTENT_ID);
     }
 
     public void addHoursButtonClicked(View view) {
         //go to the addWorkHours view
         Intent addHoursIntent = new Intent(this, AddHoursActivity.class);
-        startActivity(addHoursIntent);
+        addHoursIntent.putExtra("token", token);
+        addHoursIntent.putExtra("userID", userID);
+        startActivityForResult(addHoursIntent, ADD_NEW_PART_INTENT_ID);
     }
 
     public void contactButtonClicked(View view) {

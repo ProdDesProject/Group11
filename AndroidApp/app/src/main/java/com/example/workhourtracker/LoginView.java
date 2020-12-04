@@ -87,7 +87,7 @@ public class LoginView extends AppCompatActivity {
                                 e.printStackTrace();
                             }
 
-                        }, error -> wrongInputToast()) {
+                        }, error -> Log.e("ERROR", error.toString())) {
 
                     public String getBodyContentType() {
                         return "application/json; charset=utf-8";
