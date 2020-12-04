@@ -19,7 +19,12 @@ public class CalendarViewActivity extends AppCompatActivity {
     private String monthString;
     private String yearString;
 
+
     private String selectedDate;
+
+    String selectedDate;
+    String id = "a12s";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +61,18 @@ public class CalendarViewActivity extends AppCompatActivity {
             yearString = Integer.toString(year);
 
             //curDate = String.valueOf(dayOfMonth + "/" + month + "/" + year); //klikattavan päivän päivämäärä
-            selectedDate = dayString + "/" + monthString + "/" + yearString;
+            selectedDate = dayString + "." + monthString + "." + yearString;
             goToIntent();
         });
     }
 
     private void goToIntent()
     {
-        //Intent dayActivityIntent = new Intent(this, DayActivity.class);
-        //dayActivityIntent.putExtra("Date", selectedDate);
-        //dayActivityIntent.putExtra("userId", id);
+        Intent dayActivityIntent = new Intent(this, DayActivity.class);
+        dayActivityIntent.putExtra("Date", selectedDate);
+        dayActivityIntent.putExtra("userId", id);
 
-        //startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
+        startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
 
     }
 }

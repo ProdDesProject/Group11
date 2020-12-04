@@ -84,6 +84,8 @@ public class MainMenuView extends AppCompatActivity {
 
     public void logoutFunctionality(){
         //Logout functionality
+        token = "";
+        userID = "";
         //close activity and go back to MainActivity/loginActivity after logout
         Intent i=new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

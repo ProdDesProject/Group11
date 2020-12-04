@@ -87,6 +87,7 @@ public class LoginView extends AppCompatActivity {
                                 e.printStackTrace();
                             }
 
+
                         }, error -> Log.e("ERROR", error.toString())) {
 
                     public String getBodyContentType() {
