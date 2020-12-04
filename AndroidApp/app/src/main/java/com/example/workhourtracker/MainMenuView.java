@@ -43,6 +43,7 @@ public class MainMenuView extends AppCompatActivity {
         //go to the addWorkHours view
         Intent addHoursIntent = new Intent(this, AddHoursActivity.class);
         startActivity(addHoursIntent);
+        addHoursIntent.putExtra("userId", userID);
     }
 
     public void contactButtonClicked(View view) {

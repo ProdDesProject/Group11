@@ -11,20 +11,14 @@ import android.widget.TextView;
 
 public class DayActivity extends AppCompatActivity {
 
-
     private TextView day;
-    String[] activity_list;
+    String[] activity_list = {"aa"};
     ListView listView;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day);
-
-
-
 
         Intent intent = getIntent();
 

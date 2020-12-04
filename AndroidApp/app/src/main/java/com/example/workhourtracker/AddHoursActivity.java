@@ -62,11 +62,17 @@ public class AddHoursActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private DatePickerDialog.OnDateSetListener mDateSetListener2;
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_hours);
+
+        Intent intent = getIntent();
+
+        userID = intent.getStringExtra("userID");
+
         editStartingDay = findViewById(R.id.startingDayEdit);
         editEndingDate = findViewById(R.id.endingDateEdit);
         editStartingTime = findViewById(R.id.startingEdit);
