@@ -1,8 +1,13 @@
 var db = require('../database');
 
 var workhour = {
-    getUsersWorkhours: function(userid, callback) {
-        return db.query('select * from schema1.workhours where userid=$1', [userid], callback);
+    getUsersWorkhours: function(workhour, callback) {
+        if (typeof workhour.startDate === 'undefined' || typeof workhour.endDate === 'undefined') {
+            return db.query('select * from schema1.workhours where userid=$1', [workhour.userid], callback);
+        }
+        else{
+            return db.query('select * from schema1.workhours where userid=$1 and starttime >=$2 and starttime < $3', [workhour.userid, workhour.startDate, workhour.endDate], callback);
+        }
     },
     postNewWorkhour: function(newWorkhour, callback) {
         console.log(newWorkhour);

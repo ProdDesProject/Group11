@@ -5,7 +5,14 @@ var workhours = require('../models/workhour_model');
 
 router.get('/:id?', function(req,res,next) {
     if(req.params.id) {
-        workhours.getUsersWorkhours(req.params.id, function(err, rows) {
+
+        const workhour = {
+            userid: req.params.id,
+            startDate: req.query.startDate,
+            endDate: req.query.endDate
+        }
+
+        workhours.getUsersWorkhours(workhour, function(err, rows) {
             if (err) {
                 res.json(err);
             } else {
