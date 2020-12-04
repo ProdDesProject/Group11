@@ -1,122 +1,3 @@
-/*package com.example.workhourtracker;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-
-
-public class AddHoursActivity extends AppCompatActivity  {
-
-    //TextView startTimeEdit, endingTimeEdit;
-    private String startTime;
-    private String endTime;
-    private String userid;
-    private String description;
-    private String token;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_hours);
-
-        Intent addHoursIntent = getIntent();
-
-        token = addHoursIntent.getStringExtra("token");
-        userid = addHoursIntent.getStringExtra("userID");
-
-        //startTimeEdit = findViewById(R.id.startingEdit);
-        //endingTimeEdit = findViewById(R.id.endingEdit);
-
-        //description = "this a description for a workhour";
-        //startTime = "2020-12-30T08:30:00Z";
-        //endTime = "2020-12-30T12:20:00Z";
-
-
-    }
-
-    public void send(View view) {
-        try{
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("userid", userid);
-            jsonBody.put("description", description);
-            jsonBody.put("startTime", startTime);
-            jsonBody.put("endTime", endTime);
-
-            final String mRequestBody = jsonBody.toString();
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-            final String url = "https://workh.herokuapp.com/workhours";
-
-            final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
-                    response -> {
-                        Toast.makeText(this, "New post added", Toast. LENGTH_SHORT). show();
-                        Log.d("RESPONSE", response);
-                        onBackPressed();
-
-
-
-
-                    }, error -> Log.e("ERROR", error.toString())) {
-                public String getBodyContentType() {
-                    return "application/json; charset=utf-8";
-                }
-                @Override
-                public byte[] getBody() throws AuthFailureError {
-                    try {
-                        return mRequestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("Authorization", "Bearer "+ token);
-                    return params;
-                }
-
-
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                    }
-                    return super.parseNetworkResponse(response);
-                }
-            };
-            requestQueue.add(groupRequest);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-}*/
 
 package com.example.workhourtracker;
 
@@ -125,8 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -134,12 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.DatePicker;
+
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+
 import android.widget.TextView;
-import android.widget.TimePicker;
+
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -147,23 +26,18 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+
 
 public class AddHoursActivity extends AppCompatActivity {
 
@@ -179,8 +53,7 @@ public class AddHoursActivity extends AppCompatActivity {
     private String startingTime;
     private String endingTime;
     private String additionalInfo;
-    private Date dateMin;
-    private Date datePlus;
+
     private String startingTimeStamp;
     private String endingTimeStamp;
 
@@ -326,12 +199,6 @@ public class AddHoursActivity extends AppCompatActivity {
 
         try{
             JSONObject jsonBody = new JSONObject();
-            //jsonBody.put("idPerson", userid);
-            //jsonBody.put("StartDate", strtDay);
-            //jsonBody.put("EndDate", endD);
-            //jsonBody.put("StartTime", strtTm);
-            //jsonBody.put("EndTime", endTm);
-            //jsonBody.put("AdditionalInfo", addInfo);
             jsonBody.put("userid", userid);
             jsonBody.put("description", additionalInfo);
             jsonBody.put("startTime", startingTimeStamp);
