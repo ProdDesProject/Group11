@@ -11,8 +11,8 @@ var workhour = {
     },
     postNewWorkhour: function(newWorkhour, callback) {
         console.log(newWorkhour);
-        return db.query('insert into schema1.workhours(userid, startTime, endTime, description) values($1,$2,$3,$4)',
-        [newWorkhour.userid, newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description],
+        return db.query('insert into schema1.workhours(hoursid, userid, startTime, endTime, description) values($1,$2,$3,$4,$5)',
+        [newWorkhour.hourid, newWorkhour.userid, newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description],
         callback
         );
     },
