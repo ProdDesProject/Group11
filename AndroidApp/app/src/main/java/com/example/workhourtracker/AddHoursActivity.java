@@ -48,19 +48,12 @@ public class AddHoursActivity extends AppCompatActivity {
     private TextView editEndingTime;
     private EditText editAdditionalInfo;
 
-    private String idPerson;
-
     private Button myButton;
     private String startingDay;
     private String endingDay;
     private String startingTime;
     private String endingTime;
     private String additionalInfo;
-
-    private Date dateMin;
-    private Date datePlus;
-
-
     private String startingTimeStamp;
     private String endingTimeStamp;
 

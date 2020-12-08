@@ -22,8 +22,8 @@ public class CalendarViewActivity extends AppCompatActivity {
 
     private String selectedDate;
 
-    String selectedDate;
-    String id = "a12s";
+    //String selectedDate;
+    //String id = "a12s";
 
 
     @Override
@@ -69,8 +69,13 @@ public class CalendarViewActivity extends AppCompatActivity {
     private void goToIntent()
     {
         Intent dayActivityIntent = new Intent(this, DayActivity.class);
-        dayActivityIntent.putExtra("Date", selectedDate);
-        dayActivityIntent.putExtra("userId", id);
+        //dayActivityIntent.putExtra("Date", selectedDate);
+        dayActivityIntent.putExtra("dayString", dayString);
+        dayActivityIntent.putExtra("monthString", monthString);
+        dayActivityIntent.putExtra("yearString", yearString);
+
+        dayActivityIntent.putExtra("token", token);
+        dayActivityIntent.putExtra("userid", userID);
 
         startActivityForResult(dayActivityIntent, ADD_NEW_PART_INTENT_ID);
 
