@@ -47,6 +47,7 @@ public class ListArrayAdapter extends ArrayAdapter {
             hourHolder.tx_startTimeText = row.findViewById(R.id.tx_startTimeText);
             hourHolder.tx_endTimeText = row.findViewById(R.id.tx_endTimeText);
             hourHolder.tx_descriptionText =  row.findViewById(R.id.tx_descriptionText);
+            hourHolder.tx_id = row.findViewById(R.id.tx_id);
             row.setTag(hourHolder);
         }
         else
@@ -58,12 +59,13 @@ public class ListArrayAdapter extends ArrayAdapter {
         hourHolder.tx_startTimeText.setText(hourListingsClass.getStartTime());
         hourHolder.tx_endTimeText.setText(hourListingsClass.getEndTime());
         hourHolder.tx_descriptionText.setText(hourListingsClass.getDescription());
+        hourHolder.tx_id.setText(hourListingsClass.getId());
         return row;
     }
 
     static class HourHolder
     {
-        TextView tx_startTimeText, tx_endTimeText, tx_descriptionText;
+        TextView tx_startTimeText, tx_endTimeText, tx_descriptionText, tx_id;
 
     }
 }

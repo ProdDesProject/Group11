@@ -134,7 +134,7 @@ public class DayActivity extends AppCompatActivity {
             //jsonArray = new JSONArray(jsonString);
 
             int count = 0;
-            String startTime, endTime, description;
+            String startTime, endTime, description, id;
             JSONArray jsonArray = new JSONArray(jsonString);
             while(count < jsonArray.length())
             {
@@ -151,7 +151,10 @@ public class DayActivity extends AppCompatActivity {
                 endTime = timeStampSplitted[0] + "  " + timeStampSplitted[1];
 
                 description = JO.getString("description");
-                HourListingsClass hourListings = new HourListingsClass(startTime, endTime, description);
+
+                id = JO.getString("hoursid");
+
+                HourListingsClass hourListings = new HourListingsClass(startTime, endTime, description, id);
                 listAdapter.add(hourListings);
                 count++;
 
