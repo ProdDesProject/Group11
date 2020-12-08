@@ -3,7 +3,11 @@
     android:layout_width="match_parent" android:layout_height="150dp">
 
 
-
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:textSize="1dp"
+        android:id="@+id/tx_id"/>
 
 
     <RelativeLayout

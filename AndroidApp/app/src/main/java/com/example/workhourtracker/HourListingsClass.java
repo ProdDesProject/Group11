@@ -2,14 +2,15 @@ package com.example.workhourtracker;
 
 public class HourListingsClass {
 
-    private String startTime, endTime, description;
+    private String startTime, endTime, description, id;
 
     //HourListingClass Includes Get and set methods to ListView, that have user hour posts for the day
 
-    public HourListingsClass(String startTime, String endTime, String description){
+    public HourListingsClass(String startTime, String endTime, String description, String id){
         this.setStartTime(startTime);
         this.setEndTime(endTime);
         this.setDescription(description);
+        this.setId(id);
     }
 
     public String getStartTime() {
@@ -34,5 +35,13 @@ public class HourListingsClass {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
