@@ -198,6 +198,33 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onClick(DialogInterface dialog, int which) {
 
                 //PUT Request
+
+                /*
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+                final String url = "https://workh.herokuapp.com/workhours/" + userid + "?startDate="+ startDate +"&endDate=" + endDate;
+
+                final StringRequest groupRequest = new StringRequest(Request.Method.GET, url,
+                        response -> {
+                            Toast.makeText(this, "Workhours retrieved", Toast. LENGTH_SHORT). show();
+                            Log.d("RESPONSE", response);
+                            jsonString = response;
+
+                            jsonDataToListView();
+
+
+                        }, error -> Log.e("ERROR", error.toString())) {
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("Authorization", "Bearer "+ token);
+                        return params;
+                    }
+
+                };
+                requestQueue.add(groupRequest); */
+
             }
         });
 
