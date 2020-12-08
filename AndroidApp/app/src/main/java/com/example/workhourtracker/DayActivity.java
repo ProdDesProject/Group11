@@ -1,10 +1,14 @@
 package com.example.workhourtracker;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,13 +23,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class DayActivity extends AppCompatActivity {
+public class DayActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private String selectedDate;
     private String startTime;
@@ -43,8 +50,9 @@ public class DayActivity extends AppCompatActivity {
     private String splitTimeStamp;
 
     private String jsonString;
+    ArrayList<String> hourIdList;
     JSONObject jsonObject;
-    //JSONArray jsonArray;
+    String hourid;
     ListArrayAdapter listAdapter;
     ListView listView;
 
@@ -52,12 +60,6 @@ public class DayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day);
-
-
-        //listView = (ListView) findViewById(R.id.listView);
-
-        //listAdapter = new ListAdapter(this, R.layout.row_layout);
-        //listView.setAdapter(listAdapter);
 
         Intent intent = getIntent();
 
@@ -126,15 +128,14 @@ public class DayActivity extends AppCompatActivity {
 
         listAdapter = new ListArrayAdapter(this, R.layout.row_layout);
         listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener(this);
+
 
         try {
-            //jsonObject = new JSONObject(jsonString);
 
-            //jsonArray = jsonString; ///JSON Array otsikko / server respose
-            //jsonArray = new JSONArray(jsonString);
-
+            hourIdList = new ArrayList<String>();
             int count = 0;
-            String startTime, endTime, description, id;
+            String startTime, endTime, description;
             JSONArray jsonArray = new JSONArray(jsonString);
             while(count < jsonArray.length())
             {
@@ -152,13 +153,14 @@ public class DayActivity extends AppCompatActivity {
 
                 description = JO.getString("description");
 
-                id = JO.getString("hoursid");
+                hourid = JO.getString("hoursid");
 
-                HourListingsClass hourListings = new HourListingsClass(startTime, endTime, description, id);
+                HourListingsClass hourListings = new HourListingsClass(startTime, endTime, description, hourid);
                 listAdapter.add(hourListings);
                 count++;
 
-                //ListView l
+                hourIdList.add(hourid);
+
             }
 
         } catch (JSONException e) {
@@ -167,6 +169,41 @@ public class DayActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //TextView textView = findViewById(R.id.textView);
+        //textView.setText(hourIdList.get(position));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("");
+        builder.setMessage("What do you want to do?");
+
+
+
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int which) {
+                //Do nothing
+            }
+        });
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                //DELETE Request
+            }
+        });
+
+        builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                //PUT Request
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 }
 
 
