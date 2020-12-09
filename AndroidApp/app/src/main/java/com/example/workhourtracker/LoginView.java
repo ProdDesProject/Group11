@@ -86,9 +86,7 @@ public class LoginView extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-
-                        }, error -> Log.e("ERROR", error.toString())) {
+                        }, error -> showError(error.toString())) {
 
                     public String getBodyContentType() {
                         return "application/json; charset=utf-8";
@@ -121,7 +119,8 @@ public class LoginView extends AppCompatActivity {
         }
     }
 
-    public void wrongInputToast() {
+    public void showError(String loginError) {
+        Log.e("ERROR", loginError);
         Toast.makeText(this, "Wrong username or password", Toast.LENGTH_SHORT).show();
     }
 
