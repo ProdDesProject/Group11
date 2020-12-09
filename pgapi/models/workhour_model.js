@@ -18,8 +18,8 @@ var workhour = {
     },
     editWorkhour: function(newWorkhour, callback) {
         return db.query(
-            'update schema1.workhours set userid=$1, startTime=$2, endTime=$3, description=$4 where hoursid=$5',
-            [newWorkhour.userid, newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description, newWorkhour.hoursid],
+            'update schema1.workhours set  startTime=$1, endTime=$2, description=$3 where hoursid=$4',
+            [ newWorkhour.startTime, newWorkhour.endTime, newWorkhour.description, newWorkhour.hoursid],
             callback
         );
     },
