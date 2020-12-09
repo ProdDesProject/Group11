@@ -46,7 +46,6 @@ router.post('/', function(req,res,next) {
 
 router.put('/:id', function(req, res, next) {
     const newWorkhour = {
-        userid: req.body.userid,
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         description: req.body.description,
