@@ -188,15 +188,12 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
                 //DELETE Request
             }
         });
 
         builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
-            @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 //PUT Request
             }
         });
