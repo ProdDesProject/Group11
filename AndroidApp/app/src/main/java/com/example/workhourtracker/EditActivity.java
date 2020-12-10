@@ -70,6 +70,7 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         hourid = intent.getStringExtra("hourid");
         token = intent.getStringExtra("token");
+
         startingTime = intent.getStringExtra("startTime");
         endingTime = intent.getStringExtra("endTime");
         additionalInfo = intent.getStringExtra("description");
@@ -195,28 +196,6 @@ public class EditActivity extends AppCompatActivity {
         return number <= 9 ? "0" + number : String.valueOf(number);
     }
 
-    public void setCurDate(){
-        Calendar now = Calendar.getInstance();
-        int year = now.get(java.util.Calendar.YEAR);
-        int month = now.get(java.util.Calendar.MONTH);
-        int day = now.get(java.util.Calendar.DAY_OF_MONTH);
-
-        month += 1;
-
-        startingDay = year + "-" + checkNumber(month) + "-" + checkNumber(day);
-
-        endingDay = startingDay;
-
-        editStartingDay.setText(startingDay);
-        editEndingDay.setText(endingDay);
-    }
-
-    private void endActivity(){
-        Intent resultIntent = new Intent();
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
-    }
-
     public void setAdditionalInfo(){
         additionalInfo = editAdditionalInfo.getText().toString();
     }
@@ -254,8 +233,12 @@ public class EditActivity extends AppCompatActivity {
                         Toast.makeText(EditActivity.this, "Workhours edited", Toast. LENGTH_SHORT). show();
                         Log.d("RESPONSE", response);
 
-                    }, error -> Log.e("ERROR", error.toString())) {
+                        onBackPressed();
 
+                    }, error -> Log.e("ERROR", error.toString())) {
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -23,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -84,6 +86,14 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         getWorkHours();
 
+    }
+
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        getWorkHours();
     }
 
     public void getStartAndEndDate() throws ParseException {
@@ -200,14 +210,14 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //DELETE Request
+                //hourid = hourIdList.get(position);
+                deleteRequest(hourIdList.get(position));
             }
         });
 
         builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //PUT Request
-
-
 
                 Intent intent = new Intent(DayActivity.this, EditActivity.class);
                 intent.putExtra("hourid",hourIdList.get(position));
@@ -220,10 +230,47 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             }
         });
 
-
-
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void deleteRequest(String selectedHourId){
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        //final String mRequestBody = jsonBody.toString();
+
+        final String url = "https://workh.herokuapp.com/workhours/" + selectedHourId;
+
+        final StringRequest groupRequest = new StringRequest(Request.Method.DELETE, url,
+                response -> {
+                    Toast.makeText(DayActivity.this, "Posting deleted", Toast. LENGTH_SHORT). show();
+                    Log.d("RESPONSE", response);
+
+                    getWorkHours();
+
+                }, error -> Log.e("ERROR", error.toString())) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+ token);
+                return params;
+            }
+
+            /*@Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }*/
+
+
+        };
+        requestQueue.add(groupRequest);
     }
 
 }
