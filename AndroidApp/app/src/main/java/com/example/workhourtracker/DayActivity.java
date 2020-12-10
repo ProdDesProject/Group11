@@ -146,7 +146,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             JSONArray jsonArray = new JSONArray(jsonString);
             while(count < jsonArray.length())
             {
-                splitTimeStamp = "[T, .]";
+                splitTimeStamp = "[T, ., Z]";
 
                 JSONObject JO = jsonArray.getJSONObject(count);
 
@@ -169,7 +169,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                 count++;
 
                 hourIdList.add(hourid);
-                descriptionList.add(hourid);
+                descriptionList.add(description);
 
             }
 
@@ -177,6 +177,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             e.printStackTrace();
         }
     }
+
 
 
     @Override

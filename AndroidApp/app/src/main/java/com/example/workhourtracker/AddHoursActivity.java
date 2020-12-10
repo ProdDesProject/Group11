@@ -282,6 +282,5 @@ public class AddHoursActivity extends AppCompatActivity {
         sendHours();
 
     }
-
 }
 

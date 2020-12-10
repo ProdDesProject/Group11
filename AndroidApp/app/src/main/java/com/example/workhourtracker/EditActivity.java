@@ -3,10 +3,18 @@ package com.example.workhourtracker;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.arch.core.internal.SafeIterableMap;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -16,19 +24,42 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class EditActivity extends AppCompatActivity {
 
+    TextView editStartingDay;
+    TextView editEndingDay;
+    TextView editStartingTime;
+    TextView editEndingTime;
+    EditText editAdditionalInfo;
+    Button myButton;
+
     private String hourid;
     private String token;
-    private String startTime;
-    private String endTime;
-    private String description;
+
+    private String startingDay;
+    private String endingDay;
+    private String startingTime;
+    private String endingTime;
+    private String additionalInfo;
+
+    private String startingTimeStamp;
+    private String endingTimeStamp;
+
+    private String splitTimeStamp = "[T, ., Z]";
+    private String splitDate = "[-, T, Z]";
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
+    private DatePickerDialog.OnDateSetListener mDateSetListener2;
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener;
 
 
     @Override
@@ -39,58 +70,216 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         hourid = intent.getStringExtra("hourid");
         token = intent.getStringExtra("token");
-        startTime = intent.getStringExtra("startTine");
-        endTime = intent.getStringExtra("endTime");
-        description = intent.getStringExtra("description");
+        startingTime = intent.getStringExtra("startTime");
+        endingTime = intent.getStringExtra("endTime");
+        additionalInfo = intent.getStringExtra("description");
 
-        //EditText editStartTime = findViewById(R.id.paivamaaraAloitus);
-        //EditText editEndTime = findViewById(R.id.paivamaaraLoppu);
-        //EditText editDescription = findViewById(R.id.)
+        editStartingDay = findViewById(R.id.startingDayEdit);
+        editEndingDay = findViewById(R.id.endingDateEdit);
+        editStartingTime = findViewById(R.id.startingEdit);
+        editEndingTime = findViewById(R.id.endingEdit);
+        editAdditionalInfo = findViewById(R.id.additionalInfoEdit);
+        myButton = findViewById(R.id.sendHoursButton);
+
+        String[] startTimeStampSplitted = startingTime.split(splitTimeStamp);
+        startingDay = startTimeStampSplitted[0];
+        startingTime = startTimeStampSplitted[1];
+        editStartingDay.setText(startingDay);
+        editStartingTime.setText(startingTime);
+
+        String[] endTimeStampSplitted = endingTime.split(splitTimeStamp);
+        endingDay = endTimeStampSplitted[0];
+        endingTime = endTimeStampSplitted[1];
+        editEndingDay.setText(endingDay);
+        editEndingTime.setText(endingTime);
+
+        editAdditionalInfo.setText(additionalInfo);
+
+        openDateDialog();
+        openDateDialog2();
+        openTimeDialog();
+        openTimeDialog2();
+
+
 
     }
 
+
+    private void openDateDialog(){
+        editStartingDay.setOnClickListener(view -> {
+
+            String[] startDayTimeStamp = startingDay.split(splitDate);
+            int year = Integer.parseInt(startDayTimeStamp[0]);
+            int month = Integer.parseInt(startDayTimeStamp[1]);
+            int day = Integer.parseInt(startDayTimeStamp[2]);
+
+
+            DatePickerDialog dialog = new DatePickerDialog(EditActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener, year, month, day);
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
+        });
+        mDateSetListener = (view, year, month, dayOfMonth) -> {
+            month += 1;
+            startingDay = year + "-" + checkNumber(month) + "-" + checkNumber(dayOfMonth);
+            endingDay = startingDay;
+            editStartingDay.setText(startingDay);
+            editEndingDay.setText(endingDay);
+        };
+    }
+
+
+
+    private void openTimeDialog(){
+        editStartingTime.setOnClickListener(v -> {
+            mTimeSetListener = (timePicker, hour, minute) -> {
+
+                startingTime = checkNumber(hour) + ":" + checkNumber(minute) + ":00";
+                editStartingTime.setText(startingTime);
+            };
+
+
+            int hour = 12;
+            int minute = 0;
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(EditActivity.this, android.R.style.Theme_Holo_Light_Dialog, mTimeSetListener, hour, minute, true);
+            Objects.requireNonNull(timePickerDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            timePickerDialog.show();
+        });
+    }
+
+
+
+
+    private void openDateDialog2(){
+        editEndingDay.setOnClickListener(view -> {
+
+            String[] startDayTimeStamp = endingDay.split(splitDate);
+            int vuosi = Integer.parseInt(startDayTimeStamp[0]);
+            int kuukausi = Integer.parseInt(startDayTimeStamp[1]);
+            int paiva = Integer.parseInt(startDayTimeStamp[2]);
+
+            DatePickerDialog dialog = new DatePickerDialog(EditActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener2, vuosi, kuukausi, paiva);
+            Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
+        });
+        mDateSetListener2 = (view, year, month, dayOfMonth) -> {
+            month += 1;
+            endingDay = year + "-" + checkNumber(month) + "-" + checkNumber(dayOfMonth);
+            editEndingDay.setText(endingDay);
+        };
+    }
+
+
+
+
+    private void openTimeDialog2(){
+        editEndingTime.setOnClickListener(v -> {
+            mTimeSetListener = (view, hourOfDay, minute) -> {
+
+
+                endingTime = checkNumber(hourOfDay) + ":" + checkNumber(minute) + ":00";
+
+                editEndingTime.setText(endingTime);
+            };
+
+            int hour = 12;
+            int minute = 0;
+            boolean is24hour = true;
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(EditActivity.this, android.R.style.Theme_Holo_Light_Dialog, mTimeSetListener, hour, minute, is24hour);
+            Objects.requireNonNull(timePickerDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            timePickerDialog.show();
+        });
+    }
+    public String checkNumber(int number) {
+        return number <= 9 ? "0" + number : String.valueOf(number);
+    }
+
+    public void setCurDate(){
+        Calendar now = Calendar.getInstance();
+        int year = now.get(java.util.Calendar.YEAR);
+        int month = now.get(java.util.Calendar.MONTH);
+        int day = now.get(java.util.Calendar.DAY_OF_MONTH);
+
+        month += 1;
+
+        startingDay = year + "-" + checkNumber(month) + "-" + checkNumber(day);
+
+        endingDay = startingDay;
+
+        editStartingDay.setText(startingDay);
+        editEndingDay.setText(endingDay);
+    }
+
+    private void endActivity(){
+        Intent resultIntent = new Intent();
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
+
+    public void setAdditionalInfo(){
+        additionalInfo = editAdditionalInfo.getText().toString();
+    }
+
+    public void getTimeStamps(){
+        startingTimeStamp = startingDay + "T" + startingTime + "Z";
+        endingTimeStamp = endingDay + "T" + endingTime + "Z";
+    }
+
+    public void onClick(View view) {
+        setAdditionalInfo();
+        getTimeStamps();
+        editfunction();
+    }
 
 
 
     public void editfunction(){
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        JSONObject jsonBody = new JSONObject();
-        //jsonBody.put("description", additionalInfo);
-        //jsonBody.put("startTime", startingTimeStamp);
-        //jsonBody.put("endTime", endingTimeStamp);
-        final String mRequestBody = jsonBody.toString();
+        try {
 
-        final String url = "https://workh.herokuapp.com/workhours/" + hourid;
+            JSONObject jsonBody = new JSONObject();
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        final StringRequest groupRequest = new StringRequest(Request.Method.PUT, url,
-                response -> {
-                    Toast.makeText(EditActivity.this, "Workhours edited", Toast. LENGTH_SHORT). show();
-                    Log.d("RESPONSE", response);
+            jsonBody.put("description", additionalInfo);
+            jsonBody.put("startTime", startingTimeStamp);
+            jsonBody.put("endTime", endingTimeStamp);
 
-                }, error -> Log.e("ERROR", error.toString())) {
+            final String mRequestBody = jsonBody.toString();
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", "Bearer "+ token);
-                return params;
-            }
+            final String url = "https://workh.herokuapp.com/workhours/" + hourid;
 
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                try {
-                    return mRequestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
-                    return null;
+            final StringRequest groupRequest = new StringRequest(Request.Method.PUT, url,
+                    response -> {
+                        Toast.makeText(EditActivity.this, "Workhours edited", Toast. LENGTH_SHORT). show();
+                        Log.d("RESPONSE", response);
+
+                    }, error -> Log.e("ERROR", error.toString())) {
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Authorization", "Bearer "+ token);
+                    return params;
                 }
-            }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
 
 
-        };
-        requestQueue.add(groupRequest);
+            };
+            requestQueue.add(groupRequest);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-
 
 }
