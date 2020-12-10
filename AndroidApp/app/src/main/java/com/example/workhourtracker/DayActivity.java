@@ -49,6 +49,10 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
     private String endDate;
     private String splitTimeStamp;
 
+    ArrayList<String> startTimeList;
+    ArrayList<String> endTimeList;
+    ArrayList<String> descriptionList;
+
     private String jsonString;
     ArrayList<String> hourIdList;
     JSONObject jsonObject;
@@ -134,6 +138,9 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         try {
 
             hourIdList = new ArrayList<String>();
+            startTimeList = new ArrayList<String>();
+            endTimeList = new ArrayList<String>();
+            descriptionList = new ArrayList<String>();
             int count = 0;
             String startTime, endTime, description;
             JSONArray jsonArray = new JSONArray(jsonString);
@@ -144,10 +151,12 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                 JSONObject JO = jsonArray.getJSONObject(count);
 
                 startTime = JO.getString("starttime");
+                startTimeList.add(startTime);
                 String[] timeStampSplitted = startTime.split(splitTimeStamp);
                 startTime = timeStampSplitted[0] + "  " + timeStampSplitted[1];
 
                 endTime = JO.getString("endtime");
+                endTimeList.add(endTime);
                 timeStampSplitted = endTime.split(splitTimeStamp);
                 endTime = timeStampSplitted[0] + "  " + timeStampSplitted[1];
 
@@ -160,6 +169,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                 count++;
 
                 hourIdList.add(hourid);
+                descriptionList.add(hourid);
 
             }
 
@@ -195,12 +205,27 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //PUT Request
+
+
+
+                Intent intent = new Intent(DayActivity.this, EditActivity.class);
+                intent.putExtra("hourid",hourIdList.get(position));
+                intent.putExtra("token",token);
+                intent.putExtra("startTime",startTimeList.get(position));
+                intent.putExtra("endTime",endTimeList.get(position));
+                intent.putExtra("description",descriptionList.get(position));
+                startActivity(intent);
+
             }
         });
+
+
 
         AlertDialog alert = builder.create();
         alert.show();
     }
+
 }
+
 
 

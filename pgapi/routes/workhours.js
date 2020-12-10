@@ -2,6 +2,7 @@ const { response } = require('express');
 var express = require('express');
 var router = express.Router();
 var workhours = require('../models/workhour_model');
+const { v4: uuidv4 } = require('uuid');
 
 router.get('/:id?', function(req,res,next) {
     if(req.params.id) {
@@ -27,6 +28,7 @@ router.get('/:id?', function(req,res,next) {
 router.post('/', function(req,res,next) {
 
     const newWorkhour = {
+        hourid: uuidv4(),
         userid: req.body.userid,
         startTime: req.body.startTime,
         endTime: req.body.endTime,
