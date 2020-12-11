@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -28,8 +30,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginView extends AppCompatActivity {
+
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static final String COOKIE_KEY = "Cookie";
+    private static final String SESSION_COOKIE = "refreshToken";
+
+    private SharedPreferences _preferences;
 
     private String usernameInput;
     private String passwordInput;
@@ -40,6 +50,7 @@ public class LoginView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_view);
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         signUpInstanceButton();
     }
@@ -108,6 +119,26 @@ public class LoginView extends AppCompatActivity {
                             responseString = String.valueOf(response.statusCode);
                         }
                         return super.parseNetworkResponse(response);
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<String, String>();
+
+                        if (params.containsKey(SET_COOKIE_KEY)
+                                && params.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+                            String cookie = params.get(SET_COOKIE_KEY);
+                            if (cookie.length() > 0) {
+                                String[] splitCookie = cookie.split(";");
+                                String[] splitSessionId = splitCookie[0].split("=");
+                                cookie = splitSessionId[1];
+                                SharedPreferences.Editor prefEditor = _preferences.edit();
+                                prefEditor.putString(SESSION_COOKIE, cookie);
+                                prefEditor.commit();
+                            }
+                        }
+
+                        return params;
                     }
                 };
                 requestQueue.add(groupRequest);

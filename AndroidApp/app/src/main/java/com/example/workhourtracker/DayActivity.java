@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,6 +36,10 @@ import java.util.Map;
 
 public class DayActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static final String COOKIE_KEY = "Cookie";
+    private static final String SESSION_COOKIE = "refreshToken";
+
     private String selectedDate;
     private String startTime;
     private String endTime;
@@ -49,6 +55,8 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
     private String endDate;
     private String splitTimeStamp;
 
+    private SharedPreferences _preferences;
+
     private String jsonString;
     ArrayList<String> hourIdList;
     JSONObject jsonObject;
@@ -62,6 +70,8 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         setContentView(R.layout.activity_day);
 
         Intent intent = getIntent();
+
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         userid = intent.getStringExtra("userid");
         token = intent.getStringExtra("token");
@@ -198,12 +208,57 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onClick(DialogInterface dialog, int which) {
 
                 //PUT Request
+                Log.d("RESPONSE", "this is a test1");
+                refreshRequest();
             }
         });
 
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    public void refreshRequest(){
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final String url = "https://workh.herokuapp.com/refresh_token";
+        Log.d("RESPONSE", "this is a test2");
+
+        final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
+                response -> {
+                    Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
+                    Log.d("RESPONSE", response);
+
+
+                }, error -> Log.e("ERROR", error.toString())) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+ token);
+
+                String sessionId = _preferences.getString(SESSION_COOKIE, "");
+                if (sessionId.length() > 0) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(SESSION_COOKIE);
+                    builder.append("=");
+                    builder.append(sessionId);
+                    if (params.containsKey(COOKIE_KEY)) {
+                        builder.append("; ");
+                        builder.append(params.get(COOKIE_KEY));
+                    }
+                    params.put(COOKIE_KEY, builder.toString());
+                }
+
+                return params;
+            }
+
+        };
+        requestQueue.add(groupRequest);
+    }
+
 }
+
+
+
 
 
