@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -25,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +57,13 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
     private String endDate;
     private String splitTimeStamp;
 
+
     private SharedPreferences _preferences;
+
+    ArrayList<String> startTimeList;
+    ArrayList<String> endTimeList;
+    ArrayList<String> descriptionList;
+
 
     private String jsonString;
     ArrayList<String> hourIdList;
@@ -90,6 +98,14 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         getWorkHours();
 
+    }
+
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        getWorkHours();
     }
 
     public void getStartAndEndDate() throws ParseException {
@@ -144,20 +160,25 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         try {
 
             hourIdList = new ArrayList<String>();
+            startTimeList = new ArrayList<String>();
+            endTimeList = new ArrayList<String>();
+            descriptionList = new ArrayList<String>();
             int count = 0;
             String startTime, endTime, description;
             JSONArray jsonArray = new JSONArray(jsonString);
             while(count < jsonArray.length())
             {
-                splitTimeStamp = "[T, .]";
+                splitTimeStamp = "[T, ., Z]";
 
                 JSONObject JO = jsonArray.getJSONObject(count);
 
                 startTime = JO.getString("starttime");
+                startTimeList.add(startTime);
                 String[] timeStampSplitted = startTime.split(splitTimeStamp);
                 startTime = timeStampSplitted[0] + "  " + timeStampSplitted[1];
 
                 endTime = JO.getString("endtime");
+                endTimeList.add(endTime);
                 timeStampSplitted = endTime.split(splitTimeStamp);
                 endTime = timeStampSplitted[0] + "  " + timeStampSplitted[1];
 
@@ -170,6 +191,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                 count++;
 
                 hourIdList.add(hourid);
+                descriptionList.add(description);
 
             }
 
@@ -177,6 +199,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             e.printStackTrace();
         }
     }
+
 
 
     @Override
@@ -198,18 +221,28 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
                 //DELETE Request
+                //hourid = hourIdList.get(position);
+                deleteRequest(hourIdList.get(position));
             }
         });
 
         builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
-            @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 //PUT Request
-                Log.d("RESPONSE", "this is a test1");
-                refreshRequest();
+
+               Log.d("RESPONSE", "this is a test1");
+               refreshRequest();
+
+/*
+                Intent intent = new Intent(DayActivity.this, EditActivity.class);
+                intent.putExtra("hourid",hourIdList.get(position));
+                intent.putExtra("token",token);
+                intent.putExtra("startTime",startTimeList.get(position));
+                intent.putExtra("endTime",endTimeList.get(position));
+                intent.putExtra("description",descriptionList.get(position));
+                startActivity(intent);*/
+
             }
         });
 
@@ -217,7 +250,9 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         alert.show();
     }
 
+
     public void refreshRequest(){
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         final String url = "https://workh.herokuapp.com/refresh_token";
@@ -227,7 +262,6 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                 response -> {
                     Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
                     Log.d("RESPONSE", response);
-
 
                 }, error -> Log.e("ERROR", error.toString())) {
 
@@ -251,14 +285,44 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
                 return params;
             }
+        };
+        requestQueue.add(groupRequest);
+    }
 
+    public void deleteRequest(String selectedHourId) {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final String mRequestBody = "jsonBody.toString()";
+
+        final String url = "https://workh.herokuapp.com/workhours/" + selectedHourId;
+
+        final StringRequest groupRequest = new StringRequest(Request.Method.DELETE, url,
+                response -> {
+                    Toast.makeText(DayActivity.this, "Posting deleted", Toast.LENGTH_SHORT).show();
+                    Log.d("RESPONSE", response);
+
+                    getWorkHours();
+                }, error -> Log.e("ERROR", error.toString())) {
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
         };
         requestQueue.add(groupRequest);
     }
 
 }
-
-
-
-
-

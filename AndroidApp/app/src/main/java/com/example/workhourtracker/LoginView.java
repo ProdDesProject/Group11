@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,6 +95,8 @@ public class LoginView extends AppCompatActivity {
                                 mainMenuIntent.putExtra("userID", userID);
                                 startActivityForResult(mainMenuIntent, ADD_NEW_PART_INTENT_ID);
 
+                                
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -123,7 +126,18 @@ public class LoginView extends AppCompatActivity {
 
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
+                        Map<String, String> params = super.getHeaders();
+
+
+                        if (params == null
+                                || params.equals(Collections.emptyMap())) {
+                            params = new HashMap<String, String>();
+                        }
+
+                        Log.d("RESPONSE", params.toString());
+                        if (params.containsKey(SET_COOKIE_KEY)){
+                            Log.d("RESPONSE", "set-cookies yes");
+                        }
 
                         if (params.containsKey(SET_COOKIE_KEY)
                                 && params.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
@@ -134,9 +148,11 @@ public class LoginView extends AppCompatActivity {
                                 cookie = splitSessionId[1];
                                 SharedPreferences.Editor prefEditor = _preferences.edit();
                                 prefEditor.putString(SESSION_COOKIE, cookie);
+                                Log.d("RESPONSE", cookie);
                                 prefEditor.commit();
                             }
                         }
+
 
                         return params;
                     }
@@ -182,5 +198,20 @@ public class LoginView extends AppCompatActivity {
 
     public void onBackPressed() {
         this.moveTaskToBack(true);
+    }
+
+    public final void checkSessionCookie(Map<String, String> headers) {
+        if (headers.containsKey(SET_COOKIE_KEY)
+                && headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+            String cookie = headers.get(SET_COOKIE_KEY);
+            if (cookie.length() > 0) {
+                String[] splitCookie = cookie.split(";");
+                String[] splitSessionId = splitCookie[0].split("=");
+                cookie = splitSessionId[1];
+                SharedPreferences.Editor prefEditor = _preferences.edit();
+                prefEditor.putString(SESSION_COOKIE, cookie);
+                prefEditor.commit();
+            }
+        }
     }
 }
