@@ -16,8 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -128,6 +131,7 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         final StringRequest groupRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
+
                     Toast.makeText(this, "Workhours retrieved", Toast. LENGTH_SHORT). show();
                     Log.d("RESPONSE", response);
                     jsonString = response;
@@ -135,8 +139,17 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                     jsonDataToListView();
 
 
-                }, error -> Log.e("ERROR", error.toString())) {
-
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("cookie1",String.valueOf(error.networkResponse.statusCode ));
+                if (error.networkResponse.statusCode == 401) {
+                    refreshRequest();
+                } else {
+                    // irrecoverable errors. show error to user.
+                }
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
@@ -231,17 +244,13 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onClick(DialogInterface dialog, int which) {
                 //PUT Request
 
-               Log.d("RESPONSE", "this is a test1");
-               refreshRequest();
-
-/*
                 Intent intent = new Intent(DayActivity.this, EditActivity.class);
                 intent.putExtra("hourid",hourIdList.get(position));
                 intent.putExtra("token",token);
                 intent.putExtra("startTime",startTimeList.get(position));
                 intent.putExtra("endTime",endTimeList.get(position));
                 intent.putExtra("description",descriptionList.get(position));
-                startActivity(intent);*/
+                startActivity(intent);
 
             }
         });
@@ -260,28 +269,49 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
-                    Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
+                    //Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
                     Log.d("RESPONSE", response);
 
+                    try {
+                        //Parse response JSONdata
+                        JSONObject obj = new JSONObject(response);
+                        Log.d("cookie1", token);
+                        token = obj.getString("token");
+                        Log.d("cookie1", token);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 }, error -> Log.e("ERROR", error.toString())) {
+
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+
+                Map<String, String> responseHeaders = response.headers;
+                String rawCookies = responseHeaders.get("Set-Cookie");
+                Log.i("cookies",rawCookies);
+
+                if (response.headers.containsKey(SET_COOKIE_KEY)
+                        && response.headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+                    String cookie = response.headers.get(SET_COOKIE_KEY);
+                    if (cookie.length() > 0) {
+                        String[] splitCookie = cookie.split(";");
+                        String[] splitSessionId = splitCookie[0].split("=");
+                        cookie = splitSessionId[1];
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString(SESSION_COOKIE, cookie);
+                        //Log.d("cookie", cookie);
+                        prefEditor.commit();
+                    }
+                }
+
+                return super.parseNetworkResponse(response);
+            }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Authorization", "Bearer "+ token);
-
-                String sessionId = _preferences.getString(SESSION_COOKIE, "");
-                if (sessionId.length() > 0) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(SESSION_COOKIE);
-                    builder.append("=");
-                    builder.append(sessionId);
-                    if (params.containsKey(COOKIE_KEY)) {
-                        builder.append("; ");
-                        builder.append(params.get(COOKIE_KEY));
-                    }
-                    params.put(COOKIE_KEY, builder.toString());
-                }
 
                 return params;
             }
