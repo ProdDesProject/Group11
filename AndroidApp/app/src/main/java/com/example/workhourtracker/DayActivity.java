@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,8 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -36,6 +41,10 @@ import java.util.Map;
 
 public class DayActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static final String COOKIE_KEY = "Cookie";
+    private static final String SESSION_COOKIE = "refreshToken";
+
     private String selectedDate;
     private String startTime;
     private String endTime;
@@ -51,9 +60,13 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
     private String endDate;
     private String splitTimeStamp;
 
+
+    private SharedPreferences _preferences;
+
     ArrayList<String> startTimeList;
     ArrayList<String> endTimeList;
     ArrayList<String> descriptionList;
+
 
     private String jsonString;
     ArrayList<String> hourIdList;
@@ -68,6 +81,8 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         setContentView(R.layout.activity_day);
 
         Intent intent = getIntent();
+
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         userid = intent.getStringExtra("userid");
         token = intent.getStringExtra("token");
@@ -116,18 +131,34 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
         final StringRequest groupRequest = new StringRequest(Request.Method.GET, url,
                 response -> {
+
                     Toast.makeText(this, "Workhours retrieved", Toast. LENGTH_SHORT). show();
                     Log.d("RESPONSE", response);
                     jsonString = response;
 
                     jsonDataToListView();
 
-
-                }, error -> Log.e("ERROR", error.toString())) {
-
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Log.d("cookie1",String.valueOf(error.networkResponse.statusCode ));
+                if (error.networkResponse.statusCode == 401) {
+                    refreshRequest();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                } else {
+                    // irrecoverable errors. show error to user.
+                }
+            }
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+                token = _preferences.getString("Token","");
+                Log.d("cookie1","on getWorkHours token: "+token);
                 params.put("Authorization", "Bearer "+ token);
                 return params;
             }
@@ -234,31 +265,97 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         alert.show();
     }
 
-    public void deleteRequest(String selectedHourId){
+
+    public void refreshRequest(){
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        //final String mRequestBody = jsonBody.toString();
+        final String url = "https://workh.herokuapp.com/refresh_token";
+        Log.d("RESPONSE1", "this is a test2");
 
-        final String url = "https://workh.herokuapp.com/workhours/" + selectedHourId;
-
-        final StringRequest groupRequest = new StringRequest(Request.Method.DELETE, url,
+        final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
-                    Toast.makeText(DayActivity.this, "Posting deleted", Toast. LENGTH_SHORT). show();
-                    Log.d("RESPONSE", response);
+                    //Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
+                    Log.d("cookie11", response);
 
-                    getWorkHours();
+                    try {
+                        //Parse response JSONdata
+                        JSONObject obj = new JSONObject(response);
+                        token = obj.getString("token");
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString("Token", token);
+                        prefEditor.commit();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                 }, error -> Log.e("ERROR", error.toString())) {
+
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+
+                Map<String, String> responseHeaders = response.headers;
+                String rawCookies = responseHeaders.get("Set-Cookie");
+                Log.i("cookies",rawCookies);
+
+                if (response.headers.containsKey(SET_COOKIE_KEY)
+                        && response.headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+                    String cookie = response.headers.get(SET_COOKIE_KEY);
+                    if (cookie.length() > 0) {
+                        String[] splitCookie = cookie.split(";");
+                        String[] splitSessionId = splitCookie[0].split("=");
+                        cookie = splitSessionId[1];
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString(SESSION_COOKIE, cookie);
+                        //Log.d("cookie", cookie);
+                        prefEditor.commit();
+                    }
+                }
+
+                return super.parseNetworkResponse(response);
+            }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Authorization", "Bearer "+ token);
+                String refreshCookie = _preferences.getString(SESSION_COOKIE,"");
+                Log.d("cookie1", "On refreshReuest: " + refreshCookie);
+                params.put("Cookie", "refreshToken="+ refreshCookie);
+
                 return params;
             }
+        };
+        requestQueue.add(groupRequest);
+    }
 
-            /*@Override
+    public void deleteRequest(String selectedHourId) {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final String mRequestBody = "jsonBody.toString()";
+
+        final String url = "https://workh.herokuapp.com/workhours/" + selectedHourId;
+
+        final StringRequest groupRequest = new StringRequest(Request.Method.DELETE, url,
+                response -> {
+                    Toast.makeText(DayActivity.this, "Posting deleted", Toast.LENGTH_SHORT).show();
+                    Log.d("RESPONSE", response);
+
+                    getWorkHours();
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse.statusCode == 401) {
+                    refreshRequest();
+
+                } else {
+                    // irrecoverable errors. show error to user.
+                }
+            }
+        }) {
+
+            @Override
             public byte[] getBody() throws AuthFailureError {
                 try {
                     return mRequestBody.getBytes("utf-8");
@@ -266,14 +363,17 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                     VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
                     return null;
                 }
-            }*/
+            }
 
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                token = _preferences.getString("Token","");
+                params.put("Authorization", "Bearer "+ token);
+                return params;
+            }
         };
         requestQueue.add(groupRequest);
     }
 
 }
-
-
-

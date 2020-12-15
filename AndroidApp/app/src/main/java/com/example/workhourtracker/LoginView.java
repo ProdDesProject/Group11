@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -28,8 +30,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginView extends AppCompatActivity {
+
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static final String COOKIE_KEY = "Cookie";
+    private static final String SESSION_COOKIE = "refreshToken";
+
+    private SharedPreferences _preferences;
 
     private String usernameInput;
     private String passwordInput;
@@ -40,6 +51,7 @@ public class LoginView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_view);
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         signUpInstanceButton();
     }
@@ -74,6 +86,9 @@ public class LoginView extends AppCompatActivity {
                                 JSONObject obj = new JSONObject(response);
                                 String userID = obj.getString("userID");
                                 String token = obj.getString("token");
+                                SharedPreferences.Editor prefEditor = _preferences.edit();
+                                prefEditor.putString("Token", token);
+                                prefEditor.commit();
 
                                 Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
 
@@ -82,6 +97,8 @@ public class LoginView extends AppCompatActivity {
                                 mainMenuIntent.putExtra("token", token);
                                 mainMenuIntent.putExtra("userID", userID);
                                 startActivityForResult(mainMenuIntent, ADD_NEW_PART_INTENT_ID);
+
+                                
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -107,7 +124,38 @@ public class LoginView extends AppCompatActivity {
                         if (response != null) {
                             responseString = String.valueOf(response.statusCode);
                         }
+
+                        Map<String, String> responseHeaders = response.headers;
+                        String rawCookies = responseHeaders.get("Set-Cookie");
+                        Log.i("cookies",rawCookies);
+
+                        if (response.headers.containsKey(SET_COOKIE_KEY)
+                                && response.headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+                            String cookie = response.headers.get(SET_COOKIE_KEY);
+                            if (cookie.length() > 0) {
+                                String[] splitCookie = cookie.split(";");
+                                String[] splitSessionId = splitCookie[0].split("=");
+                                cookie = splitSessionId[1];
+                                SharedPreferences.Editor prefEditor = _preferences.edit();
+                                prefEditor.putString(SESSION_COOKIE, cookie);
+                                Log.d("cookies", cookie);
+                                prefEditor.commit();
+                            }
+                        }
+
                         return super.parseNetworkResponse(response);
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> params = super.getHeaders();
+
+                        if (params == null
+                                || params.equals(Collections.emptyMap())) {
+                            params = new HashMap<String, String>();
+                        }
+
+                        return params;
                     }
                 };
                 requestQueue.add(groupRequest);
@@ -152,4 +200,5 @@ public class LoginView extends AppCompatActivity {
     public void onBackPressed() {
         this.moveTaskToBack(true);
     }
+
 }

@@ -7,9 +7,11 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,8 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -42,8 +47,14 @@ public class EditActivity extends AppCompatActivity {
     EditText editAdditionalInfo;
     Button myButton;
 
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static final String COOKIE_KEY = "Cookie";
+    private static final String SESSION_COOKIE = "refreshToken";
+
     private String hourid;
     private String token;
+
+    private SharedPreferences _preferences;
 
     private String startingDay;
     private String endingDay;
@@ -70,6 +81,8 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         hourid = intent.getStringExtra("hourid");
         token = intent.getStringExtra("token");
+
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         startingTime = intent.getStringExtra("startTime");
         endingTime = intent.getStringExtra("endTime");
@@ -235,13 +248,24 @@ public class EditActivity extends AppCompatActivity {
 
                         onBackPressed();
 
-                    }, error -> Log.e("ERROR", error.toString())) {
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (error.networkResponse.statusCode == 401) {
+                        refreshRequest();
+                        editfunction();
+                    } else {
+                        // irrecoverable errors. show error to user.
+                    }
+                }
+            })  {
                 public String getBodyContentType() {
                     return "application/json; charset=utf-8";
                 }
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
+                    token = _preferences.getString("Token","");
                     params.put("Authorization", "Bearer "+ token);
                     return params;
                 }
@@ -263,6 +287,69 @@ public class EditActivity extends AppCompatActivity {
         catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void refreshRequest(){
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final String url = "https://workh.herokuapp.com/refresh_token";
+        Log.d("RESPONSE1", "this is a test2");
+
+        final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
+                response -> {
+                    //Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
+                    Log.d("cookie11", response);
+
+                    try {
+                        //Parse response JSONdata
+                        JSONObject obj = new JSONObject(response);
+                        token = obj.getString("token");
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString("Token", token);
+                        prefEditor.commit();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }, error -> Log.e("ERROR", error.toString())) {
+
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+
+                Map<String, String> responseHeaders = response.headers;
+                String rawCookies = responseHeaders.get("Set-Cookie");
+                Log.i("cookies",rawCookies);
+
+                if (response.headers.containsKey(SET_COOKIE_KEY)
+                        && response.headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+                    String cookie = response.headers.get(SET_COOKIE_KEY);
+                    if (cookie.length() > 0) {
+                        String[] splitCookie = cookie.split(";");
+                        String[] splitSessionId = splitCookie[0].split("=");
+                        cookie = splitSessionId[1];
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString(SESSION_COOKIE, cookie);
+                        //Log.d("cookie", cookie);
+                        prefEditor.commit();
+                    }
+                }
+
+                return super.parseNetworkResponse(response);
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+ token);
+                String refreshCookie = _preferences.getString(SESSION_COOKIE,"");
+                Log.d("cookie1", "On refreshReuest: " + refreshCookie);
+                params.put("Cookie", "refreshToken="+ refreshCookie);
+
+                return params;
+            }
+        };
+        requestQueue.add(groupRequest);
     }
 
 }
