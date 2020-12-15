@@ -86,6 +86,9 @@ public class LoginView extends AppCompatActivity {
                                 JSONObject obj = new JSONObject(response);
                                 String userID = obj.getString("userID");
                                 String token = obj.getString("token");
+                                SharedPreferences.Editor prefEditor = _preferences.edit();
+                                prefEditor.putString("Token", token);
+                                prefEditor.commit();
 
                                 Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
 
@@ -135,7 +138,7 @@ public class LoginView extends AppCompatActivity {
                                 cookie = splitSessionId[1];
                                 SharedPreferences.Editor prefEditor = _preferences.edit();
                                 prefEditor.putString(SESSION_COOKIE, cookie);
-                                //Log.d("cookie", cookie);
+                                Log.d("cookies", cookie);
                                 prefEditor.commit();
                             }
                         }
@@ -198,18 +201,4 @@ public class LoginView extends AppCompatActivity {
         this.moveTaskToBack(true);
     }
 
-    public final void checkSessionCookie(Map<String, String> headers) {
-        if (headers.containsKey(SET_COOKIE_KEY)
-                && headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
-            String cookie = headers.get(SET_COOKIE_KEY);
-            if (cookie.length() > 0) {
-                String[] splitCookie = cookie.split(";");
-                String[] splitSessionId = splitCookie[0].split("=");
-                cookie = splitSessionId[1];
-                SharedPreferences.Editor prefEditor = _preferences.edit();
-                prefEditor.putString(SESSION_COOKIE, cookie);
-                prefEditor.commit();
-            }
-        }
-    }
 }

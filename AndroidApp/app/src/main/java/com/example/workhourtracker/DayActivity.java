@@ -138,13 +138,17 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
 
                     jsonDataToListView();
 
-
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("cookie1",String.valueOf(error.networkResponse.statusCode ));
+                //Log.d("cookie1",String.valueOf(error.networkResponse.statusCode ));
                 if (error.networkResponse.statusCode == 401) {
                     refreshRequest();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
                 } else {
                     // irrecoverable errors. show error to user.
                 }
@@ -153,6 +157,8 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+                token = _preferences.getString("Token","");
+                Log.d("cookie1","on getWorkHours token: "+token);
                 params.put("Authorization", "Bearer "+ token);
                 return params;
             }
@@ -265,19 +271,20 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         final String url = "https://workh.herokuapp.com/refresh_token";
-        Log.d("RESPONSE", "this is a test2");
+        Log.d("RESPONSE1", "this is a test2");
 
         final StringRequest groupRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     //Toast.makeText(this, "Stuff happened", Toast. LENGTH_SHORT). show();
-                    Log.d("RESPONSE", response);
+                    Log.d("cookie11", response);
 
                     try {
                         //Parse response JSONdata
                         JSONObject obj = new JSONObject(response);
-                        Log.d("cookie1", token);
                         token = obj.getString("token");
-                        Log.d("cookie1", token);
+                        SharedPreferences.Editor prefEditor = _preferences.edit();
+                        prefEditor.putString("Token", token);
+                        prefEditor.commit();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -312,6 +319,9 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Authorization", "Bearer "+ token);
+                String refreshCookie = _preferences.getString(SESSION_COOKIE,"");
+                Log.d("cookie1", "On refreshReuest: " + refreshCookie);
+                params.put("Cookie", "refreshToken="+ refreshCookie);
 
                 return params;
             }
@@ -333,7 +343,17 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
                     Log.d("RESPONSE", response);
 
                     getWorkHours();
-                }, error -> Log.e("ERROR", error.toString())) {
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse.statusCode == 401) {
+                    refreshRequest();
+
+                } else {
+                    // irrecoverable errors. show error to user.
+                }
+            }
+        }) {
 
             @Override
             public byte[] getBody() throws AuthFailureError {
@@ -348,7 +368,8 @@ public class DayActivity extends AppCompatActivity implements AdapterView.OnItem
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", "Bearer " + token);
+                token = _preferences.getString("Token","");
+                params.put("Authorization", "Bearer "+ token);
                 return params;
             }
         };
